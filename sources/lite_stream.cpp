@@ -93,15 +93,17 @@ namespace lite
         byte auxiliary[sizeof(std::uint32_t)];
         to_little_endian(static_cast<std::uint32_t>(block_number), auxiliary);
 
-        bool success = m_decryptor.DecryptAndVerify(static_cast<byte*>(output),
-                                                    m_buffer.get() + rc - get_mac_size(),
-                                                    get_mac_size(),
-                                                    m_buffer.get(),
-                                                    static_cast<int>(get_iv_size()),
-                                                    auxiliary,
-                                                    sizeof(auxiliary),
-                                                    m_buffer.get() + get_iv_size(),
-                                                    out_size);
+        auto decryptor = m_decryptor;    // Copy the state so that it can be called concurrently
+
+        bool success = decryptor.DecryptAndVerify(static_cast<byte*>(output),
+                                                  m_buffer.get() + rc - get_mac_size(),
+                                                  get_mac_size(),
+                                                  m_buffer.get(),
+                                                  static_cast<int>(get_iv_size()),
+                                                  auxiliary,
+                                                  sizeof(auxiliary),
+                                                  m_buffer.get() + get_iv_size(),
+                                                  out_size);
 
         if (m_check && !success)
             throw LiteMessageVerificationException();
