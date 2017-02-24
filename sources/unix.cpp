@@ -696,5 +696,26 @@ std::unique_ptr<const char, void (*)(const char*)> get_type_name(const std::exce
         return {demangled, [](const char* ptr) { free((void*)ptr); }};
     return {name, [](const char*) { /* no op */ }};
 };
+
+#define CHECK_CALL(expr)                                                                           \
+    do                                                                                             \
+    {                                                                                              \
+        int rc = (expr);                                                                           \
+        if (rc)                                                                                    \
+        {                                                                                          \
+            THROW_POSIX_EXCEPTION(rc, #expr);                                                      \
+        }                                                                                          \
+    } while (0)
+SharedMutex::SharedMutex() { CHECK_CALL(pthread_rwlock_init(&m_lock, nullptr)); }
+
+SharedMutex::~SharedMutex() { pthread_rwlock_destroy(&m_lock); }
+
+void SharedMutex::lock() { CHECK_CALL(pthread_rwlock_wrlock(&m_lock)); }
+
+void SharedMutex::unlock() { CHECK_CALL(pthread_rwlock_unlock(&m_lock)); }
+
+void SharedMutex::lock_shared() { CHECK_CALL(pthread_rwlock_rdlock(&m_lock)); }
+
+void SharedMutex::unlock_shared() { unlock(); }
 }
 #endif

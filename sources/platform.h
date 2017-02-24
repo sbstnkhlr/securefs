@@ -259,6 +259,21 @@ public:
     static std::unique_ptr<ConsoleColourSetter> create_setter(FILE* fp);
 };
 
+class SharedMutex
+{
+    DISABLE_COPY_MOVE(SharedMutex)
+private:
+    pthread_rwlock_t m_lock;
+
+public:
+    explicit SharedMutex();
+    ~SharedMutex();
+    void lock();
+    void unlock();
+    void lock_shared();
+    void unlock_shared();
+};
+
 namespace tls
 {
 #ifdef WIN32

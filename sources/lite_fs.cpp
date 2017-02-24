@@ -33,6 +33,64 @@ namespace lite
             stat->st_size, m_crypt_stream->get_block_size(), m_crypt_stream->get_iv_size());
     }
 
+    void File::lock()
+    {
+        m_file_stream->lock(true);
+        m_lock.lock();
+    }
+
+    void File::unlock() noexcept
+    {
+        try
+        {
+            m_lock.unlock();
+        }
+        catch (const std::exception& e)
+        {
+            ERROR_LOG("Error unlocking shared mutex at %p (%s: %s)",
+                      &m_lock,
+                      get_type_name(e).get(),
+                      e.what());
+        }
+        try
+        {
+            m_file_stream->unlock();
+        }
+        catch (const std::exception& e)
+        {
+            ERROR_LOG("Error unlocking file (%s: %s)", get_type_name(e).get(), e.what());
+        }
+    }
+
+    void File::lock_shared()
+    {
+        m_file_stream->lock(false);
+        m_lock.unlock_shared();
+    }
+
+    void File::unlock_shared() noexcept
+    {
+        try
+        {
+            m_lock.unlock_shared();
+        }
+        catch (const std::exception& e)
+        {
+            ERROR_LOG("Error unlocking shared mutex at %p (%s: %s)",
+                      &m_lock,
+                      get_type_name(e).get(),
+                      e.what());
+        }
+        try
+        {
+            m_file_stream->unlock();
+        }
+        catch (const std::exception& e)
+        {
+            ERROR_LOG("Error unlocking file (%s: %s)", get_type_name(e).get(), e.what());
+        }
+    }
+
     FileSystem::FileSystem(std::shared_ptr<const securefs::OSService> root,
                            const key_type& name_key,
                            const key_type& content_key,
