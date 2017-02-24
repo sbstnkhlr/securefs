@@ -65,18 +65,22 @@ namespace lite
     void File::lock_shared()
     {
         m_lock.lock_shared();
-        m_file_stream->lock(false);
+        if (++m_read_lock_count <= 1)
+            m_file_stream->lock(false);
     }
 
     void File::unlock_shared() noexcept
     {
-        try
+        if (--m_read_lock_count <= 0)
         {
-            m_file_stream->unlock();
-        }
-        catch (const std::exception& e)
-        {
-            ERROR_LOG("Error unlocking file (%s: %s)", get_type_name(e).get(), e.what());
+            try
+            {
+                m_file_stream->unlock();
+            }
+            catch (const std::exception& e)
+            {
+                ERROR_LOG("Error unlocking file (%s: %s)", get_type_name(e).get(), e.what());
+            }
         }
         try
         {

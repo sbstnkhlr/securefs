@@ -6,6 +6,7 @@
 #include "myutils.h"
 #include "platform.h"
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
@@ -27,6 +28,7 @@ namespace lite
         securefs::optional<lite::AESGCMCryptStream> m_crypt_stream;
         std::shared_ptr<securefs::FileStream> m_file_stream;
         SharedMutex m_lock;
+        std::atomic<int> m_read_lock_count{0};
 
     public:
         explicit File(std::shared_ptr<securefs::FileStream> file_stream,
