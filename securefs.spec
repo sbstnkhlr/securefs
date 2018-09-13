@@ -5,11 +5,9 @@ Release:        1%{?dist}
 Summary:        securefs is an encrypted filesystem in userspace (FUSE)
 License:        MIT
 URL:            https://github.com/netheril96/securefs
-Source0:        https://github.com/netheril96/securefs/archive/v%{version}.tar.gz
+Source0:        https://github.com/netheril96/securefs/archive/0.8.2.tar.gz
 
-
-
-                
+          
 
 %description
 securefs is a filesystem in userspace (FUSE) with transparent encryption (when writing) and decryption (when reading).
