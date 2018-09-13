@@ -16,8 +16,8 @@ securefs is a filesystem in userspace (FUSE) with transparent encryption (when w
 %setup -c %{name}-%{version}
 
 %install
-install -D -m 0755 ./gocryptfs %{buildroot}%{_bindir}/securefs
-install -D -m 0644 ./gocryptfs.1 %{buildroot}%{_mandir}/man1/securefs.1
+install -D -m 0755 ./securefs %{buildroot}%{_bindir}/securefs
+install -D -m 0644 ./securefs.1 %{buildroot}%{_mandir}/man1/securefs.1
 
 %files
 %{_bindir}/securefs
